@@ -1,58 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllUsers, getUserById } from './app/actionTypes/userAction'
+import { UserData } from './app/state/initialUserState'
+import { RootState } from './app/store'
+import Button from './components/Button'
+import UserCard from './components/UserCard'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+    const data: UserData = useSelector((state: RootState) => state.users)
+    const dispatch = useDispatch()
+
+    const fetchUser = (userId: number) => {
+        getUserById(dispatch, userId)
+    }
+
+    useEffect(() => {
+        getAllUsers(dispatch, data)
+    }, [])
+    return (
+        <div className='h-screen bg-slate-800 p-10'>
+            <div className='text-white'>
+                <h2 className='text-3xl font-bold text-center'>User Data</h2>
+                <div className='py-5'>
+                    <UserCard
+                        isLoading={data.isLoading}
+                        data={data?.singleUser}
+                    />
+                </div>
+                <div className='grid grid-cols-10 gap-6 mt-5'>
+                    {
+                        data.totalUser.map((user) => <Button key={user.id} data={user} onClick={fetchUser} />)
+                    }
+                </div>
+            </div>
+        </div>
+    )
 }
 
-export default App;
+export default App
